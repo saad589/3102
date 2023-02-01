@@ -1,0 +1,85 @@
+.. 3102 documentation master file, created by
+   sphinx-quickstart on Mon Jan 30 14:03:39 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+NE-3102: Electronics-II Laboratory (2021-22)
+============================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   groups
+   references
+
+Course Description
+------------------
+
+This course is designed to help the students to get a practical experience about the principle, operation and applications of various digital devices and microprocessors. The course mostly focuses operation of the basic building blocks of digital electronics with emphasis on digital logics, combinational logics, sequential logics, digital numbers and arithmetic. This course also provides the students with the practical knowledge of flip-flops and their applications.
+
+Learning Outcomes
+-----------------
+
+On completion of the course, students are able to:
+
+* Understand Combinational and logical digital circuits and their differences.
+* To learn working principle of basic digital electronics circuits for data processing application
+* To understand the basic architecture of 8-bit microprocessors.
+* Able to write programs on 8086 microprocessor based systems.
+* Identify the addressing modes of an instruction.
+* Develop programming skills in assembly language.
+
+Groups
+------
+Please find the group distribution here: 
+:doc:`groups`
+
+List of Experiments
+-------------------
+
+1. Construction of basic gates (AND, OR & NOT) using discrete components (Resistor, Diode,Transistor etc.) & the verification of the truth table of the constructed gates. 
+
+| **Assigned:** 18/01/2023
+| **Due:** 25/01/2023
+| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_1.pdf>`_
+
+2. To study and verify NAND as a Universal Gate. 
+
+| **Assigned:** 25/01/2023
+| **Due:** 01/02/2023
+| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_3.pdf>`_
+
+3. Design an Ex-OR/Ex-NOR* gate using NAND gates. 
+
+ 
+| **Assigned:** 01/02/2023
+| **Due:** 08/02/2023
+| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_4.pdf>`_
+|
+| * Either implement Ex-OR or implement Ex-NOR; you are allowed to choose between the two. 
+
+4. Circuit realization of logic expression using logic gates. 
+
+| **Assigned:** TBA
+| **Due:** TBA
+| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_5.pdf>`_
+
+5. Truth Table verification of J-K flip-flop. 
+
+| **Assigned:** TBA
+| **Due:** TBA
+| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_7.pdf>`_
+
+.. note::
+   For circuit building, utilize a 5V+TTL+BJT configuration unless specified otherwise. Employ signal diodes with glass sealing, instead of rectifiers. The positive rail should be placed on the inner portion of the breadboard, while the outer portion should serve as the ground rail. For best results, connect the rails on both sides of the breadboard (beware of the cut in the middle!). Short the grounds if you are using more than one breadboard for stability. 
+
+.. note::
+   Properly label your tables and figures. In circuit diagrams, please identify all the components (e.g., resistance values, component ID, etc.). You are expected to elaborate on the result and discussion; these are the most critical sections in your report. You are also expected to provide references at the end!
+
+Indices and tables
+------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

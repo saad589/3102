@@ -1,0 +1,7 @@
+References
+==========
+
+**References**
+
+1. Tocci, R.J., Widmer, N.S. and Moss, G.L., 2007. *Digital systems: principles and applications.* Prentice Hall. Pearson Education International.
+2. Matsumoto, M. and Nishimura, T., 1998. *Mersenne twister: a 623-dimensionally equidistributed uniform pseudo-random number generator.* ACM Transactions on Modeling and Computer Simulation (TOMACS), 8(1), pp.3-30.
