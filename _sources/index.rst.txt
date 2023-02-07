@@ -44,11 +44,13 @@ List of Experiments
 | **Due:** 25/01/2023
 | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_1.pdf>`_
 
-2. To study and verify NAND as a Universal Gate. 
+2. To study and verify NAND/NOR* as a Universal Gate. 
 
 | **Assigned:** 25/01/2023
 | **Due:** 01/02/2023
 | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_3.pdf>`_
+|
+| * Either implement NAND or implement NOR; you are allowed to choose between the two.
 
 3. Design an Ex-OR/Ex-NOR* gate using NAND gates. 
 
@@ -61,9 +63,15 @@ List of Experiments
 
 4. Circuit realization of logic expression using logic gates. 
 
-| **Assigned:** TBA
-| **Due:** TBA
+| **Assigned:** 15/02/23
+| **Due:** 22/02/23
 | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_5.pdf>`_
+
+.. note::
+   Each group has been assigned different truth tables. Starting from the table, figure out the simplest logic expression using the K map specifically in SOP form; do further manipulation if necessary and then implement the circuit. Find the group-wise truth tables assignment here: :doc:`tables` 
+
+.. note::
+   If you don't have a 3-input AND gate IC, you can easily make one out of two AND gates. The same goes for a 3-input OR gate. 
 
 5. Truth Table verification of J-K flip-flop. 
 
