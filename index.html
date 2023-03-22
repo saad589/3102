@@ -116,7 +116,7 @@
 <p>If you don’t have a 3-input AND gate IC, you can easily make one out of two AND gates. The same goes for a 3-input OR gate.</p>
 </div>
 <ol class="arabic simple" start="5">
-<li><p>Truth table verification of S-R, T, D, J-K flip-flop.</p></li>
+<li><p>Function table verification of S-R, D, J-K, T flip-flops.</p></li>
 </ol>
 <div class="line-block">
 <div class="line"><strong>Assigned:</strong> 22/02/23</div>
@@ -145,17 +145,43 @@
 <div class="line"><br /></div>
 <div class="line">* Alternative use of D flip-flops will be accepted as well.</div>
 </div>
+<p><strong>Practice</strong> Design a 3-bit ring counter and verify its operation.</p>
+<p><strong>Practice</strong> Design a frequency divider circuit using 3-bit asynchronous counter.</p>
 <ol class="arabic simple" start="7">
 <li><p>To implement a 4-bit parallel adder using 7483 IC.</p></li>
 </ol>
 <div class="line-block">
 <div class="line"><strong>Assigned:</strong> 22/03/23</div>
-<div class="line"><strong>Due:</strong> TBA</div>
+<div class="line"><strong>Due:</strong> 29/03/23</div>
 <div class="line"><strong>Report:</strong> <a class="reference external" href="https://github.com/saad589/3202/raw/reports/3102_2.pdf">(link)</a></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Perform the arithmetic operation 6 + 1 - 4 (or any other) in the 2’s-complement system using the adder. The operation should be done in 2 steps: first perform 6 + 1 and then perform 7 - 4. Values in the intermediate and final steps should be stored/accumulated in the Accumulator or the A register. Manually simulate the B register by applying HIGH/LOW on the bits. Use two 7474 D flip-flop ICs for constructing the Accumulator register and asynchronously load the initial augend/minuend: in this case, the value is the 2’s-complement of 6, including the sign bit. Do not put a timing generator/clock; manually synchronize the transfer instead</p>
+<p>Perform the arithmetic operation 6+1-4 (or any other) in the 2’s-complement system using the adder. The operation should be done in 2 steps: first perform 6+1 and then perform 7-4. Values in the intermediate and final steps should be stored/accumulated in the Accumulator or the A register. Manually simulate the B register by applying HIGH/LOW on the bits. Use two 7474 D flip-flop ICs for constructing the Accumulator register and asynchronously load the initial augend/minuend: in this case, the value is 6 in 4-bit binary, including the sign bit. Do not put a timing generator/clock; manually synchronize the transfer instead. Note that an array of Ex-OR gates (plus a simulated carry) performs the plain binary to 2’s-complement conversion between the B register and the points where the values are actually input to the 7483 IC, meaning that you do not need to perform the 2’s-complement conversion; the circuit will do that for you.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The implementaiton is essentially a 4-bit arithmetic logic unit (ALU).</p>
+</div>
+<ol class="arabic simple" start="8">
+<li><p>Design (a) half adder, full adder and (b) half subtractor, full subtractor circuits using logic gates and testing the circuits.</p></li>
+</ol>
+<div class="line-block">
+<div class="line"><strong>Assigned:</strong> Optional</div>
+<div class="line"><strong>Due:</strong> N/a</div>
+<div class="line"><strong>Report:</strong> <a class="reference external" href="https://github.com/saad589/3202/raw/reports/~">(link)</a></div>
+</div>
+<ol class="arabic simple" start="9">
+<li><p>Design a MOD-6 asynchronous (ripple) counter and verify its operation.</p></li>
+</ol>
+<div class="line-block">
+<div class="line"><strong>Assigned:</strong> Optional</div>
+<div class="line"><strong>Due:</strong> N/a</div>
+<div class="line"><strong>Report:</strong> <a class="reference external" href="https://github.com/saad589/3202/raw/reports/~">(link)</a></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use 3 J-K flip-flops to first build a full 3-bit MOD-8 asynchronous (ripple) counter and then downgrade to MOD-6. Are are also expected to characterize the accumulated propagation delay using the scope.</p>
 </div>
 </section>
 <section id="indices-and-tables">
