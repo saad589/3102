@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Verilog &#8212; NE-3102  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="verilog">
+<h1>Verilog<a class="headerlink" href="#verilog" title="Permalink to this heading">¶</a></h1>
+<p>RTL/gate-level Verilog (HDL) code for 4-bit parallel adder w/ 7-segment decoder.</p>
+<p>Top-level <code class="docutils literal notranslate"><span class="pre">adder_w_decoder</span></code> module:</p>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="no">`timescale</span><span class="w"> </span><span class="mh">1</span><span class="n">ns</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mh">1</span><span class="n">ps</span>
+<span class="c1">//////////////////////////////////////////////////////////////////////////////////</span>
+<span class="c1">// Company: Dept. of Nuclear Engineering, University of Dhaka</span>
+<span class="c1">// Engineer: Saad Islam AMEI, MPhil</span>
+<span class="c1">//</span>
+<span class="c1">// Create Date: 19:08:55 03/19/2023</span>
+<span class="c1">// Design Name: 4-bit parallel adder w/ 7-segment decoder</span>
+<span class="c1">// Module Name: adder_w_decoder</span>
+<span class="c1">// Project Name: ne_3102_adder_verilog</span>
+<span class="c1">// Target Devices: Spartan XC6SLX9 (CSG324)</span>
+<span class="c1">// Tool versions: Xilinx ISE 14.7</span>
+<span class="c1">// Description: Top-level module integrating 4-bit parallel adder module and the</span>
+<span class="c1">//              7-segment decoder module.</span>
+<span class="c1">//</span>
+<span class="c1">// Dependencies:</span>
+<span class="c1">//</span>
+<span class="c1">// Revision:</span>
+<span class="c1">// Revision 0.01 - File Created</span>
+<span class="c1">// Additional Comments:</span>
+<span class="c1">//</span>
+<span class="c1">//////////////////////////////////////////////////////////////////////////////////</span>
+<span class="k">module</span><span class="w"> </span><span class="n">adder_w_decoder</span><span class="p">(</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w">              </span><span class="c1">// DIP Switches DP8-DP5</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w">              </span><span class="c1">// DIP Switches DP4-DP1</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">ClockIn</span><span class="p">,</span><span class="w">              </span><span class="c1">// 100MHz Clock</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">Display</span><span class="p">,</span><span class="w">       </span><span class="c1">// Display Segments</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">reg</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">Enables</span><span class="p">,</span><span class="w">   </span><span class="c1">// Enable Bits</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">decp</span><span class="w">                 </span><span class="c1">// decimal point</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">     </span><span class="kt">wire</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">Sum</span><span class="p">;</span>
+<span class="w">     </span><span class="kt">tri</span><span class="w">  </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">DecoderInput</span><span class="p">;</span>
+<span class="w">     </span><span class="kt">wire</span><span class="w"> </span><span class="n">Cout</span><span class="p">;</span>
+<span class="w">     </span><span class="kt">wire</span><span class="w"> </span><span class="n">EnableClock</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">four_bit_adder</span><span class="w"> </span><span class="n">adder</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">Sum</span><span class="p">,</span><span class="n">Cout</span><span class="p">);</span>
+<span class="w">  </span><span class="n">four_bit_tristate</span><span class="w"> </span><span class="n">TriA</span><span class="p">(</span><span class="o">~</span><span class="n">A</span><span class="p">,</span><span class="o">~</span><span class="n">Enables</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span><span class="n">DecoderInput</span><span class="p">);</span>
+<span class="w">  </span><span class="n">four_bit_tristate</span><span class="w"> </span><span class="n">TriB</span><span class="p">(</span><span class="o">~</span><span class="n">B</span><span class="p">,</span><span class="o">~</span><span class="n">Enables</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span><span class="n">DecoderInput</span><span class="p">);</span>
+<span class="w">  </span><span class="n">four_bit_tristate</span><span class="w"> </span><span class="n">TriCo</span><span class="p">(</span><span class="n">Cout</span><span class="o">?</span><span class="mh">4</span><span class="mb">&#39;b1110</span><span class="o">:</span><span class="mh">4</span><span class="mb">&#39;b1111</span><span class="p">,</span><span class="o">~</span><span class="n">Enables</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span><span class="n">DecoderInput</span><span class="p">);</span>
+<span class="w">  </span><span class="n">four_bit_tristate</span><span class="w"> </span><span class="n">TriSum</span><span class="p">(</span><span class="o">~</span><span class="n">Sum</span><span class="p">,</span><span class="o">~</span><span class="n">Enables</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span><span class="n">DecoderInput</span><span class="p">);</span>
+<span class="w">  </span><span class="n">hex2_7seg</span><span class="w"> </span><span class="n">Decoder</span><span class="p">(</span>
+<span class="w">                                              </span><span class="n">DecoderInput</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span><span class="w">   </span><span class="c1">// input D</span>
+<span class="w">                                              </span><span class="n">DecoderInput</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span><span class="w">   </span><span class="c1">// input C</span>
+<span class="w">                                              </span><span class="n">DecoderInput</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span><span class="w">   </span><span class="c1">// input B</span>
+<span class="w">                                              </span><span class="n">DecoderInput</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span><span class="w">   </span><span class="c1">// input A</span>
+<span class="w">                                              </span><span class="n">Display</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span><span class="w">        </span><span class="c1">// seg a</span>
+<span class="w">                                              </span><span class="n">Display</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span><span class="w">        </span><span class="c1">// seg b</span>
+<span class="w">                                              </span><span class="n">Display</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span><span class="w">        </span><span class="c1">// seg c</span>
+<span class="w">                                              </span><span class="n">Display</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span><span class="w">        </span><span class="c1">// seg d</span>
+<span class="w">                                              </span><span class="n">Display</span><span class="p">[</span><span class="mh">4</span><span class="p">],</span><span class="w">        </span><span class="c1">// seg e</span>
+<span class="w">                                              </span><span class="n">Display</span><span class="p">[</span><span class="mh">5</span><span class="p">],</span><span class="w">        </span><span class="c1">// seg f</span>
+<span class="w">                                              </span><span class="n">Display</span><span class="p">[</span><span class="mh">6</span><span class="p">],</span><span class="w">        </span><span class="c1">// seg g</span>
+<span class="w">                                              </span><span class="n">decp</span>
+<span class="w">                                              </span><span class="p">);</span>
+
+<span class="w">     </span><span class="n">freq_divider</span><span class="w"> </span><span class="n">div1</span><span class="p">(</span><span class="n">ClockIn</span><span class="p">,</span><span class="mh">32</span><span class="mi">&#39;d1</span><span class="n">_666_667</span><span class="p">,</span><span class="n">EnableClock</span><span class="p">);</span><span class="w"> </span><span class="c1">// ClockIn = 100 MHz</span>
+<span class="w">                                                           </span><span class="c1">// EnableClock = 60 Hz</span>
+
+<span class="w">     </span><span class="k">initial</span>
+<span class="w">       </span><span class="k">begin</span>
+<span class="w">         </span><span class="n">Enables</span><span class="o">=</span><span class="mh">4</span><span class="mb">&#39;b1110</span><span class="p">;</span><span class="w"> </span><span class="c1">// Rightmost display goes first</span>
+<span class="w">       </span><span class="k">end</span>
+
+<span class="w">     </span><span class="k">always</span><span class="w"> </span><span class="p">@</span><span class="w"> </span><span class="p">(</span><span class="k">posedge</span><span class="w"> </span><span class="n">EnableClock</span><span class="p">)</span>
+<span class="w">       </span><span class="k">begin</span>
+<span class="w">              </span><span class="k">case</span><span class="p">(</span><span class="n">Enables</span><span class="p">)</span><span class="w"> </span><span class="c1">// Bitwise shift</span>
+<span class="w">                     </span><span class="mh">4</span><span class="mb">&#39;b0111</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Enables</span><span class="o">=</span><span class="mh">4</span><span class="mb">&#39;b1011</span><span class="p">;</span>
+<span class="w">                     </span><span class="mh">4</span><span class="mb">&#39;b1011</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Enables</span><span class="o">=</span><span class="mh">4</span><span class="mb">&#39;b1101</span><span class="p">;</span>
+<span class="w">                     </span><span class="mh">4</span><span class="mb">&#39;b1101</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Enables</span><span class="o">=</span><span class="mh">4</span><span class="mb">&#39;b1110</span><span class="p">;</span>
+<span class="w">                     </span><span class="mh">4</span><span class="mb">&#39;b1110</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Enables</span><span class="o">=</span><span class="mh">4</span><span class="mb">&#39;b0111</span><span class="p">;</span>
+<span class="w">              </span><span class="k">endcase</span>
+<span class="w">            </span><span class="k">end</span>
+<span class="k">endmodule</span>
+</pre></div>
+</div>
+<p>The four bit adder <code class="docutils literal notranslate"><span class="pre">four_bit_adder</span></code> module:</p>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">four_bit_adder</span><span class="p">(</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">Sum</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">Co</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">wire</span><span class="w"> </span><span class="n">C1</span><span class="p">,</span><span class="n">C2</span><span class="p">,</span><span class="n">C3</span><span class="p">;</span>
+<span class="w">  </span><span class="n">half_adder</span><span class="w"> </span><span class="n">ha0</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span><span class="n">B</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span><span class="n">Sum</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span><span class="n">C1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">full_adder</span><span class="w"> </span><span class="n">fa1</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span><span class="n">B</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span><span class="n">C1</span><span class="p">,</span><span class="n">Sum</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span><span class="n">C2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">full_adder</span><span class="w"> </span><span class="n">fa2</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span><span class="n">B</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span><span class="n">C2</span><span class="p">,</span><span class="n">Sum</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span><span class="n">C3</span><span class="p">);</span>
+<span class="w">  </span><span class="n">full_adder</span><span class="w"> </span><span class="n">fa3</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span><span class="n">B</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span><span class="n">C3</span><span class="p">,</span><span class="n">Sum</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span><span class="n">Co</span><span class="p">);</span>
+<span class="k">endmodule</span>
+</pre></div>
+</div>
+<p>The full adder <code class="docutils literal notranslate"><span class="pre">full_adder</span></code> module:</p>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">full_adder</span><span class="p">(</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">B</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">Ci</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">S</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">Co</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">wire</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="n">G</span><span class="p">,</span><span class="n">H</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">half_adder</span><span class="w"> </span><span class="n">ha1</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">G</span><span class="p">);</span>
+<span class="w">  </span><span class="n">half_adder</span><span class="w"> </span><span class="n">ha2</span><span class="p">(</span><span class="n">P</span><span class="p">,</span><span class="n">Ci</span><span class="p">,</span><span class="n">S</span><span class="p">,</span><span class="n">H</span><span class="p">);</span>
+<span class="w">  </span><span class="k">or</span><span class="p">(</span><span class="n">Co</span><span class="p">,</span><span class="n">G</span><span class="p">,</span><span class="n">H</span><span class="p">);</span>
+
+<span class="k">endmodule</span>
+</pre></div>
+</div>
+<p>The half adder <code class="docutils literal notranslate"><span class="pre">half_adder</span></code> module:</p>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">half_adder</span><span class="p">(</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">x</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">y</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">S</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">C</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">xor</span><span class="p">(</span><span class="n">S</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">);</span>
+<span class="w">  </span><span class="k">and</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">);</span>
+
+<span class="k">endmodule</span>
+</pre></div>
+</div>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">four_bit_tristate</span><span class="p">(</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">I</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">EN</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">O</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">assign</span><span class="w"> </span><span class="n">O</span><span class="o">=</span><span class="n">EN</span><span class="o">?</span><span class="nl">I:</span><span class="mh">4</span><span class="p">&#39;</span><span class="n">bzzzz</span><span class="p">;</span>
+
+<span class="k">endmodule</span>
+</pre></div>
+</div>
+<p>The 7-segment decoder module <code class="docutils literal notranslate"><span class="pre">hex2_7seg</span></code> (written by Rodrigo Baessa):</p>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="no">`timescale</span><span class="w"> </span><span class="mh">1</span><span class="n">ns</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mh">1</span><span class="n">ps</span>
+<span class="c1">//////////////////////////////////////////////////////////////////////////////////</span>
+<span class="c1">// Company: Universidad Galileo</span>
+<span class="c1">// Engineer: Rodrigo Baessa, ECORP</span>
+<span class="c1">//</span>
+<span class="c1">// Create Date:    15:37:54 04/05/2010</span>
+<span class="c1">// Design Name:</span>
+<span class="c1">// Module Name:    hex2_7seg</span>
+<span class="c1">// Project Name:</span>
+<span class="c1">// Target Devices:</span>
+<span class="c1">// Tool versions:</span>
+<span class="c1">// Description: Hex to 7 Seg Decoder</span>
+<span class="c1">//</span>
+<span class="c1">// Dependencies: none</span>
+<span class="c1">//</span>
+<span class="c1">// Revision: 1.0</span>
+<span class="c1">// Revision 0.01 - File Created</span>
+<span class="c1">// Additional Comments:</span>
+<span class="c1">//</span>
+<span class="c1">//////////////////////////////////////////////////////////////////////////////////</span>
+<span class="k">module</span><span class="w"> </span><span class="n">hex2_7seg</span><span class="p">(</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">D</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">C</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">B</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">aSeg</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">bSeg</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">cSeg</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">dSeg</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">eSeg</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">fSeg</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">gSeg</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">dp</span>
+<span class="w">    </span><span class="p">);</span>
+
+
+<span class="k">assign</span><span class="w"> </span><span class="n">aSeg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//0</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//2</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//3</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//5</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//6</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//7</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//8</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//9</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//A</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//C</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//E</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w">  </span><span class="c1">//F</span>
+<span class="w">                      </span><span class="p">);</span>
+<span class="k">assign</span><span class="w"> </span><span class="n">bSeg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//0</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//1</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//2</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//3</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//4</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//7</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//8</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//9</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//A</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w">  </span><span class="c1">//D</span>
+<span class="w">                      </span><span class="p">);</span>
+<span class="k">assign</span><span class="w"> </span><span class="n">cSeg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//0</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//1</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//3</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//4</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//5</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//6</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//7</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//8</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//9</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//A</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//B</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w">  </span><span class="c1">//D</span>
+<span class="w">                      </span><span class="p">);</span>
+<span class="k">assign</span><span class="w"> </span><span class="n">dSeg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//0</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//2</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//3</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//5</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//6</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//8</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//9</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//B</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//C</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//D</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w">  </span><span class="c1">//E</span>
+<span class="w">                      </span><span class="p">);</span>
+<span class="k">assign</span><span class="w"> </span><span class="n">eSeg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//0</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//2</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//6</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//8</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//A</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//B</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//C</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//D</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//E</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w">  </span><span class="c1">//F</span>
+<span class="w">                      </span><span class="p">);</span>
+<span class="k">assign</span><span class="w"> </span><span class="n">fSeg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//0</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//4</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//5</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//6</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//8</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//9</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//A</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//B</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//C</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//E</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w">  </span><span class="c1">//F</span>
+<span class="w">                      </span><span class="p">);</span>
+<span class="k">assign</span><span class="w"> </span><span class="n">gSeg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//2</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//3</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//4</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//5</span>
+<span class="w">           </span><span class="p">(</span><span class="o">~</span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//6</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//8</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//9</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//A</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//B</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//D</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="c1">//E</span>
+<span class="w">           </span><span class="p">(</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">C</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">B</span><span class="w"> </span><span class="o">&amp;</span><span class="w">  </span><span class="n">A</span><span class="p">)</span><span class="w">  </span><span class="c1">//F</span>
+<span class="w">                      </span><span class="p">);</span>
+<span class="k">assign</span><span class="w"> </span><span class="n">dp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">1</span><span class="p">;</span>
+<span class="k">endmodule</span>
+</pre></div>
+</div>
+<p>The frequency divider <code class="docutils literal notranslate"><span class="pre">freq_divider</span></code> module:</p>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">freq_divider</span><span class="p">(</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">in</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">ratio</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">reg</span><span class="w"> </span><span class="n">out</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">    </span><span class="kt">reg</span><span class="w"> </span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span><span class="w"> </span><span class="n">count</span><span class="p">;</span>
+<span class="w">    </span><span class="k">initial</span>
+<span class="w">      </span><span class="k">begin</span>
+<span class="w">              </span><span class="n">count</span><span class="o">=</span><span class="mh">32</span><span class="mi">&#39;d0</span><span class="p">;</span>
+<span class="w">              </span><span class="n">out</span><span class="o">=</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<span class="w">            </span><span class="k">end</span>
+
+<span class="w">    </span><span class="k">always</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">in</span><span class="p">)</span>
+<span class="w">      </span><span class="k">begin</span>
+<span class="w">       </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mh">1</span><span class="p">;</span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">count</span><span class="o">==</span><span class="p">(</span><span class="n">ratio</span><span class="o">/</span><span class="mh">2</span><span class="p">))</span>
+<span class="w">              </span><span class="k">begin</span>
+<span class="w">                </span><span class="n">count</span><span class="o">=</span><span class="mh">32</span><span class="mi">&#39;d0</span><span class="p">;</span>
+<span class="w">                     </span><span class="n">out</span><span class="o">=~</span><span class="n">out</span><span class="p">;</span>
+<span class="w">              </span><span class="k">end</span>
+<span class="w">            </span><span class="k">end</span>
+<span class="k">endmodule</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">NE-3102</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="groups.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, saad589.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/verilog.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
