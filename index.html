@@ -42,18 +42,16 @@
 </div>
 <section id="course-description">
 <h2>Course Description<a class="headerlink" href="#course-description" title="Permalink to this heading">¶</a></h2>
-<p>This course is designed to help the students to get a practical experience about the principle, operation and applications of various digital devices and microprocessors. The course mostly focuses operation of the basic building blocks of digital electronics with emphasis on digital logics, combinational logics, sequential logics, digital numbers and arithmetic. This course also provides the students with the practical knowledge of flip-flops and their applications.</p>
+<p>This course is designed to help the students to get a practical experience with the principle, operations, and applications of various digital devices and microprocessors. The course primarily focuses on the theory and operation of the basic building blocks of digital electronics, such as combinational logic, sequential logic, digital numbers, and arithmetic. This course also provides the students with practical knowledge of microprocessor-based digital systems.</p>
 </section>
 <section id="learning-outcomes">
 <h2>Learning Outcomes<a class="headerlink" href="#learning-outcomes" title="Permalink to this heading">¶</a></h2>
 <p>On completion of the course, students are able to:</p>
 <ul class="simple">
-<li><p>Understand Combinational and logical digital circuits and their differences.</p></li>
-<li><p>To learn working principle of basic digital electronics circuits for data processing application</p></li>
-<li><p>To understand the basic architecture of 8-bit microprocessors.</p></li>
-<li><p>Able to write programs on 8086 microprocessor based systems.</p></li>
-<li><p>Identify the addressing modes of an instruction.</p></li>
-<li><p>Develop programming skills in assembly language.</p></li>
+<li><p>Understand the principles of digital number systems, binary arithmetic, and code conversions.</p></li>
+<li><p>Apply the principles of combinational and sequential logic circuits to design and implement digital circuits for specific applications.</p></li>
+<li><p>Design and implement digital circuits using a hardware description language (HDL) and verify their functionality using simulation software and hardware.</p></li>
+<li><p>Develop proficiency in using microprocessor-based development boards and software tools to write, debug, and test assembly language programs.</p></li>
 </ul>
 </section>
 <section id="groups">
@@ -64,7 +62,7 @@
 <section id="list-of-experiments">
 <h2>List of Experiments<a class="headerlink" href="#list-of-experiments" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
-<li><p>Construction of basic gates (AND, OR &amp; NOT) using discrete components (Resistor, Diode,Transistor etc.) &amp; the verification of the truth table of the constructed gates.</p></li>
+<li><p>Construction of basic gates (OR, AND &amp; NOT) using discrete components (resistor, diode, transistor etc.) and the verification of the truth tables of the constructed gates.</p></li>
 </ol>
 <div class="line-block">
 <div class="line"><strong>Assigned:</strong> 18/01/2023</div>
@@ -80,7 +78,7 @@
 <p>Properly label your tables and figures. In circuit diagrams, please identify all the components (e.g., resistance values, component ID, etc.). You are expected to elaborate on the result and discussion; these are the most critical sections in your report. You are also expected to provide references at the end!</p>
 </div>
 <ol class="arabic simple" start="2">
-<li><p>To study and verify NAND/NOR* as a Universal Gate.</p></li>
+<li><p>To study and verify NAND/NOR* as a universal Gate.</p></li>
 </ol>
 <div class="line-block">
 <div class="line"><strong>Assigned:</strong> 25/01/2023</div>
@@ -129,11 +127,11 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Check the logic ICs with a logic checker beforehand for any issues; the current invenory is reported to have many faulty ICs.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
 <p>Please document any synchronization-related issues in your build; describe any inadequacies in clocking/timing. You are advised to seek assistance from Laboratory Assistants/Attendants.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Check the logic ICs with the logic checker beforehand for any issues; the current invenory is reported to have many faulty ICs.</p>
 </div>
 <ol class="arabic simple" start="6">
 <li><p>Design a 4-bit shift register using J-K* flip-flops and verify its operation.</p></li>
@@ -146,7 +144,7 @@
 <div class="line">* Alternative use of D flip-flops will be accepted as well.</div>
 </div>
 <ol class="arabic simple" start="7">
-<li><p>To implement a 4-bit parallel adder using 7483 IC.</p></li>
+<li><p>Implementation of a 4-bit parallel adder using 7483 IC.</p></li>
 </ol>
 <div class="line-block">
 <div class="line"><strong>Assigned:</strong> 22/03/23</div>
@@ -161,16 +159,20 @@
 <p class="admonition-title">Note</p>
 <p>Find the HDL implementaion here: <a class="reference internal" href="verilog.html"><span class="doc">Verilog</span></a></p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Beware that some of the 7483 ICs available in the lab are actually 74283 ICs! 74283 is also a 4-bit parallel full adder IC but with a different pin layout. This is clearly a manufacturing defect. Use the IC tester to be sure.</p>
+</div>
 <ol class="arabic simple" start="8">
-<li><p>Design (a) half adder, full adder and (b) half subtractor, full subtractor circuits using logic gates and testing the circuits.</p></li>
+<li><p>Design (a) half adder, full adder and (b) half subtractor, full subtractor circuits using logic gates and test the circuits.</p></li>
 </ol>
 <div class="line-block">
 <div class="line"><strong>Assigned:</strong> Optional</div>
 <div class="line"><strong>Due:</strong> N/a</div>
-<div class="line"><strong>Report:</strong> <a class="reference external" href="https://github.com/saad589/3202/raw/reports/~">(link)</a></div>
+<div class="line"><strong>Report:</strong> <a class="reference external" href="https://github.com/saad589/3202/raw/reports/3102_6.pdf">(link)</a></div>
 </div>
 <ol class="arabic simple" start="9">
-<li><p>Design a MOD-6 asynchronous (ripple) counter and verify its operation.</p></li>
+<li><p>Design a 3-bit MOD-8 asynchronous (ripple) counter and verify its operation.</p></li>
 </ol>
 <div class="line-block">
 <div class="line"><strong>Assigned:</strong> Optional</div>
@@ -179,7 +181,27 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Use 3 J-K flip-flops to first build a full 3-bit MOD-8 asynchronous (ripple) up counter and then downgrade to MOD-6. Are are also expected to characterize the accumulated propagation delay using the scope.</p>
+<p>Use 3 J-K flip-flops as an up counter. Your are are expected to characterize the accumulated propagation delay using the scope.  Additionally, see if you can (1) count down; (2) downgrade the counter to MOD-5.</p>
+</div>
+<ol class="arabic simple" start="10">
+<li><p>Design a frequency divider circuit using 3-bit asynchronous counter.</p></li>
+</ol>
+<div class="line-block">
+<div class="line"><strong>Assigned:</strong> Optional</div>
+<div class="line"><strong>Due:</strong> N/a</div>
+<div class="line"><strong>Report:</strong> <a class="reference external" href="https://github.com/saad589/3202/raw/reports/~">(link)</a></div>
+</div>
+<ol class="arabic simple" start="11">
+<li><p>16-bit addition using 8086 microprocessor.</p></li>
+</ol>
+<div class="line-block">
+<div class="line"><strong>Assigned:</strong> TBA</div>
+<div class="line"><strong>Due:</strong> TBA</div>
+<div class="line"><strong>Report:</strong> <a class="reference external" href="https://github.com/saad589/3202/raw/reports/3102_11.pdf">(link)</a></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Find the instruction here: <a class="reference internal" href="asm.html"><span class="doc">ASM</span></a></p>
 </div>
 </section>
 <section id="indices-and-tables">
