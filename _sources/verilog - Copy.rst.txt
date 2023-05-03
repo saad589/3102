@@ -1,0 +1,313 @@
+Verilog
+=======
+
+RTL/gate-level Verilog (HDL) code for 4-bit parallel adder w/ 7-segment decoder.  
+
+Top-level ``adder_w_decoder`` module: 
+
+..  code-block:: verilog
+
+    `timescale 1ns / 1ps
+    //////////////////////////////////////////////////////////////////////////////////
+    // Company: Dept. of Nuclear Engineering, University of Dhaka
+    // Engineer: Saad Islam AMEI, MPhil 
+    // 
+    // Create Date: 19:08:55 03/19/2023
+    // Design Name: 4-bit parallel adder w/ 7-segment decoder 
+    // Module Name: adder_w_decoder
+    // Project Name: ne_3102_adder_verilog
+    // Target Devices: Spartan XC6SLX9 (CSG324)
+    // Tool versions: Xilinx ISE 14.7
+    // Description: Top-level module integrating 4-bit parallel adder module and the 
+    //              7-segment decoder module. 
+    //
+    // Dependencies: 
+    //
+    // Revision: 
+    // Revision 0.01 - File Created
+    // Additional Comments: 
+    // 
+    //////////////////////////////////////////////////////////////////////////////////
+    module adder_w_decoder(
+        input [3:0] A,              // DIP Switches DP8-DP5 
+        input [3:0] B,              // DIP Switches DP4-DP1
+        input ClockIn,              // 100MHz Clock
+        output [6:0] Display,       // Display Segments
+        output reg [3:0] Enables,   // Enable Bits 
+        output decp                 // decimal point
+        );
+    	 wire [3:0] Sum;          
+    	 tri  [3:0] DecoderInput;  
+    	 wire Cout;
+    	 wire EnableClock;
+    
+      four_bit_adder adder(A,B,Sum,Cout);
+      four_bit_tristate TriA(~A,~Enables[3],DecoderInput);
+      four_bit_tristate TriB(~B,~Enables[2],DecoderInput);
+      four_bit_tristate TriCo(Cout?4'b1110:4'b1111,~Enables[1],DecoderInput);
+      four_bit_tristate TriSum(~Sum,~Enables[0],DecoderInput);
+      hex2_7seg Decoder(
+    						  DecoderInput[3],   // input D
+    						  DecoderInput[2],   // input C
+    						  DecoderInput[1],   // input B
+    						  DecoderInput[0],   // input A
+    						  Display[0],        // seg a
+    						  Display[1],        // seg b
+    						  Display[2],        // seg c
+    						  Display[3],        // seg d
+    						  Display[4],        // seg e
+    						  Display[5],        // seg f
+    						  Display[6],        // seg g
+    						  decp
+    						  );
+    
+    	 freq_divider div1(ClockIn,32'd1_666_667,EnableClock); // ClockIn = 100 MHz
+                                                               // EnableClock = 60 Hz
+
+    	 initial 
+    	   begin
+    	     Enables=4'b1110; // Rightmost display goes first
+    	   end
+    
+    	 always @ (posedge EnableClock)
+    	   begin
+    		  case(Enables) // Bitwise shift
+    		 	 4'b0111 : Enables=4'b1011;
+    	 		 4'b1011 : Enables=4'b1101;
+     			 4'b1101 : Enables=4'b1110;
+    			 4'b1110 : Enables=4'b0111;
+    		  endcase
+    		end
+    endmodule
+
+The four bit adder ``four_bit_adder`` module:
+
+..  code-block:: verilog
+
+    module four_bit_adder(
+        input [3:0] A,
+        input [3:0] B,
+        output [3:0] Sum,
+        output Co
+        );
+    
+      wire C1,C2,C3;
+      half_adder ha0(A[0],B[0],Sum[0],C1);
+      full_adder fa1(A[1],B[1],C1,Sum[1],C2);
+      full_adder fa2(A[2],B[2],C2,Sum[2],C3);
+      full_adder fa3(A[3],B[3],C3,Sum[3],Co);
+    endmodule      
+
+The full adder ``full_adder`` module:
+
+..  code-block:: verilog
+
+    module full_adder(
+        input A,
+        input B,
+        input Ci,
+        output S,
+        output Co
+        );
+
+      wire P,G,H;
+
+      half_adder ha1(A,B,P,G);
+      half_adder ha2(P,Ci,S,H);
+      or(Co,G,H);
+
+    endmodule
+
+The half adder ``half_adder`` module:
+
+..  code-block:: verilog
+
+    module half_adder(
+        input x,
+        input y,
+        output S,
+        output C
+        );
+
+      xor(S,x,y);
+      and(C,x,y);
+    
+    endmodule
+
+The tristate buffer ``four_bit_tristate`` module:
+
+..  code-block:: verilog   
+
+    module four_bit_tristate(
+        input [3:0] I,
+        input EN,
+        output [3:0] O
+        );
+
+      assign O=EN?I:4'bzzzz;
+    
+    endmodule
+
+The 7-segment decoder module ``hex2_7seg`` (written by Rodrigo Baessa):  
+
+..  code-block:: verilog   
+
+    `timescale 1ns / 1ps
+    //////////////////////////////////////////////////////////////////////////////////
+    // Company: Universidad Galileo
+    // Engineer: Rodrigo Baessa, ECORP
+    // 
+    // Create Date:    15:37:54 04/05/2010 
+    // Design Name: 
+    // Module Name:    hex2_7seg 
+    // Project Name: 
+    // Target Devices: 
+    // Tool versions: 
+    // Description: Hex to 7 Seg Decoder
+    //
+    // Dependencies: none
+    //
+    // Revision: 1.0
+    // Revision 0.01 - File Created
+    // Additional Comments: 
+    //
+    //////////////////////////////////////////////////////////////////////////////////
+    module hex2_7seg(
+        input D,
+        input C,
+        input B,
+        input A,
+        output aSeg,
+        output bSeg,
+        output cSeg,
+        output dSeg,
+        output eSeg,
+        output fSeg,
+        output gSeg,
+    	output dp
+        );
+
+
+    assign aSeg = ~(
+               (~D & ~C & ~B & ~A) |//0
+               (~D & ~C &  B & ~A) |//2
+               (~D & ~C &  B &  A) |//3
+               (~D &  C & ~B &  A) |//5
+               (~D &  C &  B & ~A) |//6
+               (~D &  C &  B &  A) |//7
+               ( D & ~C & ~B & ~A) |//8
+               ( D & ~C & ~B &  A) |//9
+               ( D & ~C &  B & ~A) |//A
+               ( D &  C & ~B & ~A) |//C
+               ( D &  C &  B & ~A) |//E
+               ( D &  C &  B &  A)  //F
+    			  );
+    assign bSeg = ~(
+               (~D & ~C & ~B & ~A) |//0
+               (~D & ~C & ~B &  A) |//1
+               (~D & ~C &  B & ~A) |//2
+               (~D & ~C &  B &  A) |//3
+               (~D &  C & ~B & ~A) |//4
+               (~D &  C &  B &  A) |//7
+               ( D & ~C & ~B & ~A) |//8
+               ( D & ~C & ~B &  A) |//9
+               ( D & ~C &  B & ~A) |//A
+               ( D &  C & ~B &  A)  //D
+    			  );
+    assign cSeg = ~(
+               (~D & ~C & ~B & ~A) |//0
+               (~D & ~C & ~B &  A) |//1
+               (~D & ~C &  B &  A) |//3
+               (~D &  C & ~B & ~A) |//4
+               (~D &  C & ~B &  A) |//5
+               (~D &  C &  B & ~A) |//6
+               (~D &  C &  B &  A) |//7
+               ( D & ~C & ~B & ~A) |//8
+               ( D & ~C & ~B &  A) |//9
+               ( D & ~C &  B & ~A) |//A
+               ( D & ~C &  B &  A) |//B
+               ( D &  C & ~B &  A)  //D
+    			  );
+    assign dSeg = ~(
+               (~D & ~C & ~B & ~A) |//0
+               (~D & ~C &  B & ~A) |//2
+               (~D & ~C &  B &  A) |//3
+               (~D &  C & ~B &  A) |//5
+               (~D &  C &  B & ~A) |//6
+               ( D & ~C & ~B & ~A) |//8
+               ( D & ~C & ~B &  A) |//9
+               ( D & ~C &  B &  A) |//B
+               ( D &  C & ~B & ~A) |//C
+               ( D &  C & ~B &  A) |//D
+               ( D &  C &  B & ~A)  //E
+    			  );
+    assign eSeg = ~(
+               (~D & ~C & ~B & ~A) |//0
+               (~D & ~C &  B & ~A) |//2
+               (~D &  C &  B & ~A) |//6
+               ( D & ~C & ~B & ~A) |//8
+               ( D & ~C &  B & ~A) |//A
+               ( D & ~C &  B &  A) |//B
+               ( D &  C & ~B & ~A) |//C
+               ( D &  C & ~B &  A) |//D
+               ( D &  C &  B & ~A) |//E
+               ( D &  C &  B &  A)  //F
+    			  );
+    assign fSeg = ~(
+               (~D & ~C & ~B & ~A) |//0
+               (~D &  C & ~B & ~A) |//4
+               (~D &  C & ~B &  A) |//5
+               (~D &  C &  B & ~A) |//6
+               ( D & ~C & ~B & ~A) |//8
+               ( D & ~C & ~B &  A) |//9
+               ( D & ~C &  B & ~A) |//A
+               ( D & ~C &  B &  A) |//B
+               ( D &  C & ~B & ~A) |//C
+               ( D &  C &  B & ~A) |//E
+               ( D &  C &  B &  A)  //F
+    			  );
+    assign gSeg = ~(
+               (~D & ~C &  B & ~A) |//2
+               (~D & ~C &  B &  A) |//3
+               (~D &  C & ~B & ~A) |//4
+               (~D &  C & ~B &  A) |//5
+               (~D &  C &  B & ~A) |//6
+               ( D & ~C & ~B & ~A) |//8
+               ( D & ~C & ~B &  A) |//9
+               ( D & ~C &  B & ~A) |//A
+               ( D & ~C &  B &  A) |//B
+               ( D &  C & ~B &  A) |//D
+               ( D &  C &  B & ~A) |//E
+               ( D &  C &  B &  A)  //F
+    			  );
+    assign dp = 1;			  
+    endmodule
+
+The frequency divider ``freq_divider`` module: 
+
+..  code-block:: verilog   
+
+    module freq_divider(
+        input in,
+        input [31:0] ratio, 
+    	output reg out
+        ); 
+    
+    	reg [31:0] count;
+    	initial 
+    	  begin
+    		  count=32'd0;
+    		  out=1'b0;
+    		end
+    
+    	always @(posedge in)
+    	  begin
+           count = count + 1;
+    		  if (count==(ratio/2))
+    		  begin
+    		    count=32'd0;
+    			 out=~out;
+    		  end
+    		end
+    endmodule	
+

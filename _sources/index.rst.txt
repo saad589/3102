@@ -16,19 +16,18 @@ NE-3102: Electronics-II Laboratory (2021-22)
 Course Description
 ------------------
 
-This course is designed to help the students to get a practical experience about the principle, operation and applications of various digital devices and microprocessors. The course mostly focuses operation of the basic building blocks of digital electronics with emphasis on digital logics, combinational logics, sequential logics, digital numbers and arithmetic. This course also provides the students with the practical knowledge of flip-flops and their applications.
+This course is designed to help the students to get a practical experience with the principle, operations, and applications of various digital devices and microprocessors. The course primarily focuses on the theory and operation of the basic building blocks of digital electronics, such as combinational logic, sequential logic, digital numbers, and arithmetic. This course also provides the students with practical knowledge of microprocessor-based digital systems.
 
 Learning Outcomes
 -----------------
 
 On completion of the course, students are able to:
 
-* Understand Combinational and logical digital circuits and their differences.
-* To learn working principle of basic digital electronics circuits for data processing application
-* To understand the basic architecture of 8-bit microprocessors.
-* Able to write programs on 8086 microprocessor based systems.
-* Identify the addressing modes of an instruction.
-* Develop programming skills in assembly language.
+* Understand the principles of digital number systems, binary arithmetic, and code conversions.
+* Apply the principles of combinational and sequential logic circuits to design and implement digital circuits for specific applications.
+* Design and implement digital circuits using a hardware description language (HDL) and verify their functionality using simulation software and hardware.
+* Develop proficiency in using microprocessor-based development boards and software tools to write, debug, and test assembly language programs.
+
 
 Groups
 ------
@@ -38,34 +37,43 @@ Please find the group distribution here:
 List of Experiments
 -------------------
 
-1. Construction of basic gates (AND, OR & NOT) using discrete components (Resistor, Diode,Transistor etc.) & the verification of the truth table of the constructed gates. 
+1. Construction of basic gates (OR, AND & NOT) using discrete components (resistor, diode, transistor etc.) and the verification of the truth tables of the constructed gates. 
 
-| **Assigned:** 18/01/2023
-| **Due:** 25/01/2023
-| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_1.pdf>`_
+   | **Assigned:** 18/01/2023
+   | **Due:** 25/01/2023
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_1.pdf>`_
 
-2. To study and verify NAND/NOR* as a Universal Gate. 
+.. note::
+   For circuit building, utilize a 5V+TTL+BJT configuration unless specified otherwise. Employ signal diodes with glass sealing, instead of rectifiers. The positive rail should be placed on the inner portion of the breadboard, while the outer portion should serve as the ground rail. For best results, connect the rails on both sides of the breadboard (beware of the cut in the middle!). Short the grounds if you are using more than one breadboard for stability. 
 
-| **Assigned:** 25/01/2023
-| **Due:** 01/02/2023
-| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_3.pdf>`_
-|
-| * Either implement NAND or implement NOR; you are allowed to choose between the two.
+.. note::
+   Any voltage falling in the range from 0 to 0.8 V is given the digital value 0, and any voltage in the range 2 to 5 V is assigned the digital value 1 (for TTL logic).
+
+
+.. note::
+   Properly label your tables and figures. In circuit diagrams, please identify all the components (e.g., resistance values, component ID, etc.). You are expected to elaborate on the result and discussion; these are the most critical sections in your report. You are also expected to provide references at the end!
+
+2. To study and verify NAND/NOR* as a universal Gate. 
+
+   | **Assigned:** 25/01/2023
+   | **Due:** 01/02/2023
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_3.pdf>`_
+   |
+   | * Either implement NAND or implement NOR; you are allowed to choose between the two.
 
 3. Design an Ex-OR/Ex-NOR* gate using NAND gates. 
 
- 
-| **Assigned:** 01/02/2023
-| **Due:** 08/02/2023
-| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_4.pdf>`_
-|
-| * Either implement Ex-OR or implement Ex-NOR; you are allowed to choose between the two. 
+   | **Assigned:** 01/02/2023
+   | **Due:** 08/02/2023
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_4.pdf>`_
+   |
+   | * Either implement Ex-OR or implement Ex-NOR; you are allowed to choose between the two. 
 
 4. Circuit realization of logic expression using logic gates. 
 
-| **Assigned:** 15/02/23
-| **Due:** 22/02/23
-| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_5.pdf>`_
+   | **Assigned:** 15/02/23
+   | **Due:** 22/02/23 (the due date must be observed)
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_5.pdf>`_
 
 .. note::
    Each group has been assigned different truth tables. Starting from the table, figure out the simplest logic expression using the K map specifically in SOP form; do further manipulation if necessary and then implement the circuit. Find the group-wise truth tables assignment here: :doc:`tables` 
@@ -73,17 +81,89 @@ List of Experiments
 .. note::
    If you don't have a 3-input AND gate IC, you can easily make one out of two AND gates. The same goes for a 3-input OR gate. 
 
-5. Truth Table verification of J-K flip-flop. 
+5. Function table verification of S-R, D, J-K, T flip-flops.
 
-| **Assigned:** TBA
-| **Due:** TBA
-| **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_7.pdf>`_
-
-.. note::
-   For circuit building, utilize a 5V+TTL+BJT configuration unless specified otherwise. Employ signal diodes with glass sealing, instead of rectifiers. The positive rail should be placed on the inner portion of the breadboard, while the outer portion should serve as the ground rail. For best results, connect the rails on both sides of the breadboard (beware of the cut in the middle!). Short the grounds if you are using more than one breadboard for stability. 
+   | **Assigned:** 22/02/23
+   | **Due:** 08/03/23 (the due date must be observed)
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_7.pdf>`_
 
 .. note::
-   Properly label your tables and figures. In circuit diagrams, please identify all the components (e.g., resistance values, component ID, etc.). You are expected to elaborate on the result and discussion; these are the most critical sections in your report. You are also expected to provide references at the end!
+   You are asked to make a timing generator/clock using a NE555 IC as an astable multivibrator. Refrer to the lab manual; additionally, use this online `555 Timer Calculator <https://www.digikey.com/en/resources/conversion-calculators/conversion-calculator-555-timer>`_ by Digi-Key.  In the circuit configuration, make sure that you can individually control the output square wave's high and low times.  
+
+.. note::
+   Please document any synchronization-related issues in your build; describe any inadequacies in clocking/timing. You are advised to seek assistance from Laboratory Assistants/Attendants. 
+
+.. warning::
+   Check the logic ICs with the logic checker beforehand for any issues; the current invenory is reported to have many faulty ICs. 
+
+6. Design a 4-bit shift register using J-K* flip-flops and verify its operation.
+
+   | **Assigned:** 01/03/23
+   | **Due:** 08/03/23 (the due date must be observed)
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_8.pdf>`_
+   |
+   | * Alternative use of D flip-flops will be accepted as well.
+
+7. Implementation of a 4-bit parallel adder using 7483 IC.
+
+   | **Assigned:** 22/03/23
+   | **Due:** 29/03/23
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_2.pdf>`_
+
+.. note::
+   Perform the arithmetic operation 6+1-4 (or any other) in the 2's-complement system using the adder. The operation should be done in 2 steps: first perform 6+1 and then perform 7-4. Values in the intermediate and final steps should be stored/accumulated in the Accumulator or the A register. Use two 7474 D flip-flop ICs for constructing the Accumulator register and asynchronously load the initial augend/minuend: in this case, the value is 6 in 4-bit binary, including the sign bit. Manually simulate the B register by applying HIGH/LOW on the bits. Note that an array of Ex-OR gates (plus a simulated carry) performs the plain binary to 2's-complement conversion between the B register and the points where the values are actually input to the 7483 IC, meaning that you do not need to perform the 2's-complement conversion; the circuit will do that for you. Do not put a timing generator/clock; manually synchronize the transfer between the adder output and the Accumulator instead. The implementaiton is essentially a 4-bit arithmetic logic unit (ALU). 
+
+.. note::
+   Find the HDL implementaion here: :doc:`verilog`
+
+.. warning::
+   Beware that some of the 7483 ICs available in the lab are actually 74283 ICs! 74283 is also a 4-bit parallel full adder IC but with a different pin layout. This is clearly a manufacturing defect. Use the IC tester to be sure.    
+
+8. Design (a) half adder, full adder and (b) half subtractor, full subtractor circuits using logic gates and test the circuits.
+
+   | **Assigned:** Optional
+   | **Due:** N/a
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_6.pdf>`_
+
+9. Design a 3-bit MOD-8 asynchronous (ripple) counter and verify its operation. 
+
+   | **Assigned:** Optional
+   | **Due:** N/a
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/~>`_
+
+.. note::
+   Use 3 J-K flip-flops as an up counter. Your are are expected to characterize the accumulated propagation delay using the scope.  Additionally, see if you can (1) count down; (2) downgrade the counter to MOD-5.  
+
+10. Design a frequency divider circuit using 3-bit asynchronous counter.
+
+   | **Assigned:** Optional
+   | **Due:** N/a
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/~>`_
+
+.. 
+   11. Design and synthezize a 4-bit parallel adder using HDL.
+   
+   | **Assigned:** Optional
+   | **Due:** N/a
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/~>`_
+   
+   .. note::
+      Find the code here: :doc:`verilog`
+
+11. 16-bit addition using 8086 microprocessor.
+
+   | **Assigned:** 03/05/23
+   | **Due:** 10/05/23
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_11.pdf>`_
+
+.. note::
+   Perform the addition F002h + F002h = 1E004h with the MDA-8086 trainer board. Follow the operation procedure of the trainer board in 'Machine Code' mode as given in the lab manual. Optionally, use the TASM assembler. To run the assembler, use a DOS environment (e.g., DOSBox). Use a serial (RS-232) to USB converter to upload the assembled binary. Please collect the manual and software stack (TCC, TASM, MEXE2HEX, MEXE2ABS, LOD186, LINK) from the lab ahead of time. 
+
+12. Conversion of BCD number to decimal in 8086 microprocessor.
+
+   | **Assigned:** Optional
+   | **Due:** N/a
+   | **Report:** `(link) <https://github.com/saad589/3202/raw/reports/3102_12.pdf>`_
 
 Indices and tables
 ------------------

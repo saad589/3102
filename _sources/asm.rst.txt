@@ -1,0 +1,120 @@
+ASM
+===
+
+16-bit addition using 8086 microprocessor.
+
+General algorithm:
+
+1. Start the program 
+2. Load the first 16-bit number into AX register from memory location 0000h:2000h
+3. Load the second 16-bit number into BX register from memory location 0000h:2002h
+4. Clear CL register (for carry) by loading 00h 
+5. Add the two numbers in AX and BX registers and accumulate the sum into AX register
+6. Jump to STORE if no carry, i.e., carry flag CF = 0 
+7. Increment the CL register if there is a carry, i.e., carry flag CF = 1 
+8. Store the sum in AX register into memory location 0000h:2004h
+9. Store the carry in CL register into memory location 0000h:2006h
+10. Stop the program 
+
+Example: F002h + F002h = 1E004h  
+
+The Assembly code (to be compiled by the assembler): 
+
+..  code-block:: asm
+
+    ;*****************************************
+    ;     MDA-Win8086 EXPERIMENT PROGRAM    *
+    ;     FILENAME  : ADD.ASM
+    ;     PROCESSOR : I8086
+    ;*****************************************
+    CODE    SEGMENT
+            ASSUME	CS:CODE,DS:CODE,ES:CODE,SS:CODE
+            ;
+            MOV AX, [2000]  ; LOAD THE FIRST NUMBER INTO AX
+            MOV BX, [2002]  ; LOAD THE SECOND NUMBER INTO BX
+            ADD AX, BX      ; ADD AX AND BX, AND ACCUMULATE THE SUM INTO AX
+            JNC STORE       ; IF CF = 0, JUMP TO STORE 
+            INC CX          ; INCREMENT THE COUNT REGISTER BY 1
+    STORE:  MOV [2004], AX  ; STORE AX CONTENT INTO MEMORY
+            MOV [2006], CX  ; STORE CX CONTENT INTO MEMORY
+            HLT             ; TERMINATE THE PROGRAM
+    CODE  ENDS 
+    	END
+
+.. note::
+   To run the assembler, use a DOS environment (e.g., DOSBox). Use a serial (RS-232) to USB converter to upload the assembled binary. 
+
+Operation of MDA-8086 trainer board in 'Machine Code' mode: 
+
+The following key presses will load the numbers in the respective locations: 
+
++------+-------------------------------+
+| Key  | Action                        |
++======+===============================+
+| AD   | segment address selector      |
++------+-------------------------------+
+| 0000 | 16-bit segment address in hex |
++------+-------------------------------+
+| :    | offset address selector       |
++------+-------------------------------+
+| 2000 | 16-bit offset address         |
++------+-------------------------------+
+| DA   | data input selector           |
++------+-------------------------------+
+| 02   | 8-bit data input in hex       |
++------+-------------------------------+
+| \+   | increment offset              |
++------+-------------------------------+
+| F0   | 8-bit data input in hex       |
++------+-------------------------------+
+| \+   | increment offset              |
++------+-------------------------------+
+| 02   | 8-bit data input in hex       |
++------+-------------------------------+
+| \+   | increment offset              |
++------+-------------------------------+
+| F0   | 8-bit data input in hex       |
++------+-------------------------------+
+
+Input the following opcode to perform the addition: 
+
++---------+-------+-------------+-----------+------------+------------------------------------+
+| Address | Label | Opcode      | Mnemonics | Operands   | Comments                           |
++=========+=======+=============+===========+============+====================================+
+| 1000    |       | 8B 06 00 20 | MOV       | AX, [2000] | Load the first word                |
++---------+-------+-------------+-----------+------------+------------------------------------+
+| 1004    |       | 8B 1E 02 20 | MOV       | BX, [2002] | Load the second word               |
++---------+-------+-------------+-----------+------------+------------------------------------+
+| 1008    |       | C6 C1 00    | MOV       | CL, 00     | Clear the CL register for carry    |
++---------+-------+-------------+-----------+------------+------------------------------------+
+| 100B    |       | 01 D8       | ADD       | AX, BX     | Add two number, sum will be in AX  |
++---------+-------+-------------+-----------+------------+------------------------------------+
+| 100D    |       | 73 02       | JNC       | \#(1011)   | Check the status of carry flag     |
++---------+-------+-------------+-----------+------------+------------------------------------+
+| 100F    |       | FE C1       | INC       | CL         | If carry flag is set, increment CL |
++---------+-------+-------------+-----------+------------+------------------------------------+
+| 1011    |       | 89 06 04 20 | MOV       | [2004],AX  | Store the sum result               |
++---------+-------+-------------+-----------+------------+------------------------------------+
+| 1015    |       | 88 0E 06 20 | MOV       | [2006], CL | Store the carry                    |
++---------+-------+-------------+-----------+------------+------------------------------------+
+| 1019    |       | F4          | HLT       |            | Stop the program                   |
++---------+-------+-------------+-----------+------------+------------------------------------+
+
+Check whether you have the same values in the respective memory locations: 
+
++----------------+-------------+-------------+
+|                | BX          | AX          |
++================+======+======+======+======+
+| Input Data     | F0   | 02   | F0   | 02   |
++----------------+------+------+------+------+
+| Memory Address | 2003 | 2002 | 2001 | 2000 |
++----------------+------+------+------+------+
+
++----------------+-------------+-------------+
+|                | Carry       | Sum         |
++================+======+======+======+======+
+| Output Data    | 00   | 01   | E0   | 04   |
++----------------+------+------+------+------+
+| Memory Address | 2007 | 2006 | 2005 | 2004 |
++----------------+------+------+------+------+
+    

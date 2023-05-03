@@ -50,7 +50,7 @@ A B C D Y
 **Group 3**
 
 = = = = =
-A B C D x
+A B C D Y
 = = = = =
 0 0 0 0 0
 0 0 0 1 1
